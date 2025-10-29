@@ -21,7 +21,7 @@
         }
         /* Style untuk tombol tab aktif */
         .tab-button.active {
-            border-bottom-color: #3b82f6; /* blue-500 */
+            border-bottom-color: #3b82f6;
             color: #3b82f6;
             font-weight: 600;
         }
@@ -32,8 +32,9 @@
                 font-family: sans-serif;
             }
             /* Sembunyikan semua elemen yang tidak perlu */
-            #input-section, #header-section, #tab-buttons, #action-buttons, #info-box {
-                display: none;
+            #input-section, #header-section, #tab-buttons, #action-buttons, #info-box,
+            .no-print, .navigation-menu {
+                display: none !important;
             }
             /* Tampilkan header khusus untuk print */
             .print-header {
@@ -45,35 +46,10 @@
             }
             /* Pastikan semua tab content terlihat saat print */
             .tab-content {
-                display: block !important; /* Tampilkan semua tab */
+                display: block !important;
                 margin-bottom: 2rem;
                 box-shadow: none;
                 border: none;
-            }
-            h2 {
-                font-size: 1.5rem;
-                margin-top: 1.5rem;
-            }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                font-size: 9pt;
-            }
-            th, td {
-                border: 1px solid #000;
-                padding: 4px;
-                word-break: break-all;
-            }
-            /* Hindari page break di dalam tabel jika memungkinkan */
-            tr {
-                page-break-inside: avoid;
-            }
-            /* Style untuk kartu soal saat print */
-            .soal-card {
-                break-inside: avoid;
-                margin-bottom: 1rem;
-                border: 1px solid #000 !important;
-                background: white !important;
             }
             /* Tampilkan identitas ujian saat print */
             .print-identitas {
@@ -90,28 +66,36 @@
                 margin-top: 3rem;
                 page-break-before: always;
             }
+            /* Tampilkan soal saat print */
+            .print-soal {
+                display: block !important;
+                page-break-before: always;
+            }
+            /* Tampilkan tabel input untuk print */
+            .print-tabel-input {
+                display: block !important;
+                page-break-before: always;
+            }
         }
 
-        /* Sembunyikan header print secara default */
-        .print-header {
-            display: none;
-        }
-        
-        /* Sembunyikan identitas ujian saat print secara default */
-        .print-identitas {
+        /* Sembunyikan elemen print secara default */
+        .print-header, .print-identitas, .print-approval, .print-soal, .print-tabel-input {
             display: none;
         }
 
-        /* Sembunyikan approval saat print secara default */
-        .print-approval {
-            display: none;
-        }
-
-        /* Style untuk input tabel */
+        /* Style untuk input */
         .jawaban-input {
-            width: 40px;
+            width: 35px;
+            height: 35px;
             text-align: center;
             text-transform: uppercase;
+            font-size: 12px;
+        }
+
+        .input-kecil {
+            font-size: 12px;
+            padding: 4px 6px;
+            height: 35px;
         }
 
         /* Style untuk logo */
@@ -141,10 +125,6 @@
             border-left-color: #10b981;
             background-color: #f0fdf4;
         }
-        .soal-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
 
         /* Badge kategori */
         .badge {
@@ -173,14 +153,54 @@
 
         /* Style untuk tanda tangan */
         .ttd-area {
-            margin-top: 80px;
+            margin-top: 60px;
             text-align: center;
         }
         .ttd-line {
             border-bottom: 1px solid #000;
-            width: 200px;
+            width: 180px;
             margin: 0 auto;
-            padding-top: 60px;
+            padding-top: 40px;
+        }
+
+        /* Style untuk tabel input yang compact */
+        .table-input-compact {
+            font-size: 11px;
+        }
+        .table-input-compact th {
+            padding: 6px 3px;
+            font-weight: 600;
+        }
+        .table-input-compact td {
+            padding: 4px 2px;
+        }
+
+        /* Style untuk section */
+        .section-card {
+            transition: all 0.3s ease;
+        }
+
+        /* Style untuk textarea soal */
+        .soal-textarea {
+            min-height: 80px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Style untuk input tabel */
+        .table-input {
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        /* Style untuk hidden */
+        .hidden {
+            display: none;
         }
     </style>
     <!-- Memuat font Inter dari Google Fonts -->
@@ -190,7 +210,7 @@
 
     <div class="max-w-7xl mx-auto">
         
-        <!-- Header Print (hanya muncul saat cetak) -->
+        <!-- Header Print -->
         <div class="print-header">
             <div class="flex items-center space-x-4">
                 <img src="https://upload.wikimedia.org/wikipedia/id/thumb/a/a4/Logo_SMK_Negeri_1_Purbalingga.png/960px-Logo_SMK_Negeri_1_Purbalingga.png" 
@@ -234,7 +254,7 @@
         </div>
 
         <!-- Header -->
-        <header id="header-section" class="mb-6 p-6 bg-white rounded-lg shadow-lg">
+        <header id="header-section" class="mb-6 p-6 bg-white rounded-lg shadow-lg section-card">
             <div class="flex items-center space-x-4">
                 <img src="https://upload.wikimedia.org/wikipedia/id/thumb/a/a4/Logo_SMK_Negeri_1_Purbalingga.png/960px-Logo_SMK_Negeri_1_Purbalingga.png" 
                      alt="Logo SMK Negeri 1 Purbalingga" class="logo">
@@ -245,23 +265,38 @@
             </div>
         </header>
 
-        <!-- Bagian Input -->
-        <section id="input-section" class="mb-6 p-6 bg-white rounded-lg shadow-lg">
+        <!-- Navigation Menu -->
+        <div class="mb-6 bg-white rounded-lg shadow-lg p-4 section-card navigation-menu">
+            <div class="flex flex-wrap gap-4 justify-center">
+                <button id="nav-input-btn" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
+                    📝 Input Data Ujian
+                </button>
+                <button id="nav-tabel-input-btn" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition font-semibold">
+                    📊 Input Jawaban & Soal
+                </button>
+                <button id="nav-hasil-btn" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition font-semibold">
+                    📈 Hasil Analisis
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 1: Input Data Ujian -->
+        <section id="input-section" class="mb-6 p-6 bg-white rounded-lg shadow-lg section-card">
             <!-- Identitas Ujian -->
             <div class="mb-6 p-6 identitas-card rounded-lg shadow-md">
                 <h2 class="text-xl font-semibold text-white mb-4">Identitas Ujian</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
                         <label for="namaMapel" class="block text-sm font-medium text-white mb-2">Nama Mata Pelajaran:</label>
-                        <input type="text" id="namaMapel" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: Matematika">
+                        <input type="text" id="namaMapel" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm input-kecil" placeholder="Contoh: Matematika">
                     </div>
                     <div>
                         <label for="kelas" class="block text-sm font-medium text-white mb-2">Kelas:</label>
-                        <input type="text" id="kelas" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: X TKJ 1">
+                        <input type="text" id="kelas" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm input-kecil" placeholder="Contoh: X TKJ 1">
                     </div>
                     <div>
                         <label for="fase" class="block text-sm font-medium text-white mb-2">Fase:</label>
-                        <select id="fase" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm">
+                        <select id="fase" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm input-kecil">
                             <option value="">Pilih Fase</option>
                             <option value="Fase A">Fase A (Kelas 1-2)</option>
                             <option value="Fase B">Fase B (Kelas 3-4)</option>
@@ -273,7 +308,7 @@
                     </div>
                     <div>
                         <label for="guruMapel" class="block text-sm font-medium text-white mb-2">Guru Mata Pelajaran:</label>
-                        <select id="guruMapel" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm">
+                        <select id="guruMapel" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm input-kecil">
                             <option value="">Pilih Guru</option>
                         </select>
                         <input type="hidden" id="nipGuru">
@@ -283,14 +318,14 @@
                 <div class="mt-4 grid grid-cols-1 gap-4">
                     <div>
                         <label for="tujuanPembelajaran" class="block text-sm font-medium text-white mb-2">Tujuan Pembelajaran:</label>
-                        <textarea id="tujuanPembelajaran" rows="3" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm" placeholder="Tuliskan tujuan pembelajaran yang diujikan..."></textarea>
+                        <textarea id="tujuanPembelajaran" rows="2" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm input-kecil" placeholder="Tuliskan tujuan pembelajaran yang diujikan..."></textarea>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>
                         <label for="jenisUjian" class="block text-sm font-medium text-white mb-2">Jenis Ujian:</label>
-                        <select id="jenisUjian" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm">
+                        <select id="jenisUjian" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm input-kecil">
                             <option value="Ulangan Harian">Ulangan Harian</option>
                             <option value="UTS">UTS</option>
                             <option value="UAS">UAS</option>
@@ -300,7 +335,7 @@
                     </div>
                     <div>
                         <label for="tanggalUjian" class="block text-sm font-medium text-white mb-2">Tanggal Ujian:</label>
-                        <input type="date" id="tanggalUjian" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm">
+                        <input type="date" id="tanggalUjian" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm input-kecil">
                     </div>
                 </div>
             </div>
@@ -312,23 +347,23 @@
                     <h2 class="text-xl font-semibold text-gray-800 mb-4">1. Pengaturan Ujian</h2>
                     <div class="mb-4">
                         <label for="kkm" class="block text-sm font-medium text-gray-700 mb-2">Tentukan KKM (Skala 1-10):</label>
-                        <input type="number" id="kkm" value="7.5" step="0.1" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm">
+                        <input type="number" id="kkm" value="7.5" step="0.1" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm input-kecil">
                     </div>
                     <div class="mb-4">
                         <label for="jumlahSoal" class="block text-sm font-medium text-gray-700 mb-2">Jumlah Soal Pilihan Ganda:</label>
-                        <input type="number" id="jumlahSoal" value="20" min="1" max="50" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm">
+                        <input type="number" id="jumlahSoal" value="20" min="1" max="50" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm input-kecil">
                     </div>
                     <div class="mb-4">
                         <label for="jumlahSiswa" class="block text-sm font-medium text-gray-700 mb-2">Jumlah Siswa:</label>
-                        <input type="number" id="jumlahSiswa" value="4" min="1" max="50" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm">
+                        <input type="number" id="jumlahSiswa" value="4" min="1" max="50" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm input-kecil">
                     </div>
                     <div>
                         <label for="kunciJawaban" class="block text-sm font-medium text-gray-700 mb-2">Kunci Jawaban (pisahkan koma):</label>
-                        <textarea id="kunciJawaban" rows="3" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: A,B,C,D,A,B,C,D,A,B,C,D,A,B,C,D,A,B,C,D"></textarea>
+                        <textarea id="kunciJawaban" rows="2" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm input-kecil" placeholder="Contoh: A,B,C,D,A,B,C,D,A,B,C,D,A,B,C,D,A,B,C,D"></textarea>
                     </div>
                     <div class="mt-4">
-                        <button id="generateTableBtn" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-green-700 transition duration-300">
-                            Buat Tabel Input Jawaban
+                        <button id="generateTableBtn" class="w-full bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition duration-300 text-sm">
+                            Buat Form Input
                         </button>
                     </div>
                 </div>
@@ -337,304 +372,127 @@
                 <div class="md:col-span-2">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4">2. Input Data Jawaban Siswa</h2>
                     
-                    <!-- Opsi Input -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Pilih metode input:</label>
-                        <div class="flex space-x-4">
-                            <button id="toggleTableBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Tabel Input</button>
-                            <button id="toggleTextareaBtn" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition">Textarea</button>
+                    <div id="tableInputInfo" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <p class="text-sm text-yellow-800">
+                                <strong>Form input tersedia di lembar terpisah.</strong> Klik tombol "Buat Form Input" untuk membuat form, kemudian buka lembar "Input Jawaban & Soal" di menu navigasi atas.
+                            </p>
                         </div>
-                    </div>
-
-                    <!-- Textarea Input (default hidden) -->
-                    <div id="textareaInput" class="hidden">
-                        <label for="dataSiswa" class="block text-sm font-medium text-gray-700 mb-2">Paste data dari Excel/Spreadsheet:</label>
-                        <textarea id="dataSiswa" rows="12" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm font-mono text-sm" placeholder="Format: NIS,Nama,J1,J2,J3,J4,...(sampai soal terakhir)
-1001,Budi Santoso,A,B,C,D,A,B,C,D,A,B,C,D,A,B,C,D,A,B,C,D
-1002,Ani Yulianti,A,C,C,D,A,B,A,D,A,B,C,D,A,B,C,A,A,B,C,D
-1003,Candra Wijaya,A,B,B,D,A,D,C,D,C,B,C,D,A,B,B,D,A,B,C,D
-1004,Dewi Lestari,B,B,C,D,B,B,C,A,A,B,C,D,A,C,C,D,A,B,C,A"></textarea>
-                        <p class="text-xs text-gray-500 mt-2">Pastikan jumlah jawaban sesuai dengan 'Jumlah Soal'.</p>
-                    </div>
-
-                    <!-- Tabel Input -->
-                    <div id="tableInput">
-                        <div class="mb-4">
-                            <p class="text-sm text-gray-600 mb-2">Isi data siswa dan jawaban di tabel berikut:</p>
-                        </div>
-                        <div class="overflow-x-auto rounded-lg border border-gray-200">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-100">
-                                    <tr id="tableHeader">
-                                        <!-- Header akan diisi oleh JavaScript -->
-                                    </tr>
-                                </thead>
-                                <tbody id="tableBody" class="bg-white divide-y divide-gray-200">
-                                    <!-- Data akan diisi oleh JavaScript -->
-                                </tbody>
-                            </table>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-2">* Isi jawaban dengan A, B, C, D, E atau kosongkan jika tidak dijawab</p>
                     </div>
                 </div>
             </div>
 
             <!-- Tombol Proses -->
             <div class="mt-6 text-center">
-                <button id="prosesButton" class="w-full md:w-auto bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 transform hover:scale-105">
+                <button id="prosesButton" class="w-full md:w-auto bg-blue-600 text-white font-bold py-2 px-8 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 transform hover:scale-105 text-sm">
                     Proses Analisis Data
                 </button>
             </div>
             
             <!-- Info Box untuk Error/Status -->
-            <div id="info-box" class="mt-4 p-4 text-center rounded-lg hidden"></div>
+            <div id="info-box" class="mt-4 p-4 text-center rounded-lg hidden text-sm"></div>
         </section>
 
-        <!-- Bagian Hasil Analisis -->
-        <section id="hasil-section" class="p-6 bg-white rounded-lg shadow-lg">
-            <!-- Navigasi Tab -->
-            <div id="tab-buttons" class="border-b border-gray-200 mb-4">
-                <nav class="flex -mb-px space-x-6 overflow-x-auto">
-                    <button class="tab-button active py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" onclick="showTab('analisisSoal')">
-                        1. Analisis Butir Soal
+        <!-- Section 2: Input Jawaban & Soal -->
+        <section id="tabel-input-section" class="mb-6 p-6 bg-white rounded-lg shadow-lg section-card hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Input Jawaban & Soal</h2>
+                <div class="flex gap-2">
+                    <button id="printTabelBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm no-print">
+                        🖨️ Cetak Form Ini
                     </button>
-                    <button class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" onclick="showTab('analisisSiswa')">
-                        2. Analisis Siswa
+                    <button id="kembaliDariTabelBtn" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition text-sm no-print">
+                        ← Kembali
                     </button>
-                    <button class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" onclick="showTab('matriksJawaban')">
-                        3. Matriks Jawaban
-                    </button>
-                    <button class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" onclick="showTab('daftarSoal')">
-                        4. Daftar Soal & Analisis
-                    </button>
-                </nav>
+                </div>
             </div>
 
-            <!-- Identitas Ujian di Hasil Analisis -->
-            <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+            <!-- Info Identitas -->
+            <div class="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                     <div>
                         <span class="font-semibold text-blue-800">Mata Pelajaran:</span>
-                        <span id="display-mapel" class="text-blue-900">-</span>
+                        <span id="tabel-mapel">-</span>
                     </div>
                     <div>
                         <span class="font-semibold text-blue-800">Kelas:</span>
-                        <span id="display-kelas" class="text-blue-900">-</span>
+                        <span id="tabel-kelas">-</span>
                     </div>
                     <div>
-                        <span class="font-semibold text-blue-800">Fase:</span>
-                        <span id="display-fase" class="text-blue-900">-</span>
+                        <span class="font-semibold text-blue-800">Jumlah Soal:</span>
+                        <span id="tabel-jumlah-soal">-</span>
                     </div>
-                    <div>
-                        <span class="font-semibold text-blue-800">Guru Mapel:</span>
-                        <span id="display-guru" class="text-blue-900">-</span>
-                    </div>
-                </div>
-                <div class="mt-2 text-sm">
-                    <span class="font-semibold text-blue-800">Tujuan Pembelajaran:</span>
-                    <span id="display-tp" class="text-blue-900">-</span>
                 </div>
             </div>
 
-            <!-- Tombol Aksi Output -->
-            <div id="action-buttons" class="flex flex-wrap gap-4 mb-4">
-                <button id="printPdf" class="bg-red-600 text-white py-2 px-5 rounded-lg shadow hover:bg-red-700 transition duration-300">
-                    Cetak Semua Laporan (.pdf)
-                </button>
-            </div>
+            <!-- Tabel Input untuk Print -->
+            <div class="print-tabel-input">
+                <h3 class="text-lg font-bold mb-4">FORM INPUT JAWABAN SISWA</h3>
+                <table class="min-w-full border border-gray-300 text-xs mb-8">
+                    <thead>
+                        <tr id="printTableHeader" class="bg-gray-100">
+                            <!-- Header akan diisi oleh JavaScript -->
+                        </tr>
+                    </thead>
+                    <tbody id="printTableBody">
+                        <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
 
-            <!-- Konten Tab 1: Analisis Butir Soal -->
-            <div id="analisisSoal" class="tab-content active">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-2xl font-bold text-gray-800">Hasil 1: Analisis Butir Soal (Tingkat Kesukaran)</h2>
-                    <div class="flex items-center space-x-2 text-sm text-gray-600">
-                        <img src="https://upload.wikimedia.org/wikipedia/id/thumb/a/a4/Logo_SMK_Negeri_1_Purbalingga.png/960px-Logo_SMK_Negeri_1_Purbalingga.png" 
-                             alt="Logo SMK Negeri 1 Purbalingga" class="h-8 w-auto">
-                        <span>SMK Negeri 1 Purbalingga</span>
+                <!-- Soal untuk Print -->
+                <div class="print-soal">
+                    <h3 class="text-lg font-bold mb-4">DAFTAR SOAL</h3>
+                    <div id="printSoalContainer">
+                        <!-- Soal akan diisi oleh JavaScript -->
                     </div>
                 </div>
-                <p class="text-sm text-gray-600 mb-4">Kategori: Sulit (P &lt; 0.30), Sedang (0.30 &le; P &le; 0.70), Mudah (P &gt; 0.70).</p>
-                <div class="overflow-x-auto rounded-lg border border-gray-200">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">No. Soal</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Kunci</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Jml Siswa Benar</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Total Siswa</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Tingkat Kesukaran (P)</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Kategori Soal</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBodySoal" class="bg-white divide-y divide-gray-200">
-                            <tr><td colspan="6" class="p-4 text-center text-gray-500">Belum ada data diproses.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
             </div>
 
-            <!-- Konten Tab 2: Analisis Siswa -->
-            <div id="analisisSiswa" class="tab-content">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-2xl font-bold text-gray-800">Hasil 2: Analisis Siswa (Status Remedial)</h2>
-                    <div class="flex items-center space-x-2 text-sm text-gray-600">
-                        <img src="https://upload.wikimedia.org/wikipedia/id/thumb/a/a4/Logo_SMK_Negeri_1_Purbalingga.png/960px-Logo_SMK_Negeri_1_Purbalingga.png" 
-                             alt="Logo SMK Negeri 1 Purbalingga" class="h-8 w-auto">
-                        <span>SMK Negeri 1 Purbalingga</span>
+            <!-- Tabel Input Interaktif -->
+            <div class="no-print">
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Tabel Input Jawaban Siswa</h3>
+                    <div class="overflow-x-auto rounded-lg border border-gray-200">
+                        <table class="min-w-full divide-y divide-gray-200 table-input-compact">
+                            <thead class="bg-gray-100">
+                                <tr id="tableHeader">
+                                    <!-- Header akan diisi oleh JavaScript -->
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- Data akan diisi oleh JavaScript -->
+                            </tbody>
+                        </table>
                     </div>
+                    <p class="text-xs text-gray-500 mt-2">* Isi jawaban dengan A, B, C, D, E atau kosongkan jika tidak dijawab</p>
                 </div>
-                <div class="overflow-x-auto rounded-lg border border-gray-200">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">NIS</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Nama Siswa</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Jumlah Benar</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Nilai Akhir (Skala 10)</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBodySiswa" class="bg-white divide-y divide-gray-200">
-                            <tr><td colspan="5" class="p-4 text-center text-gray-500">Belum ada data diproses.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
-            <!-- Konten Tab 3: Matriks Jawaban -->
-            <div id="matriksJawaban" class="tab-content">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-2xl font-bold text-gray-800">Hasil 3: Matriks Jawaban Siswa (Per Soal)</h2>
-                    <div class="flex items-center space-x-2 text-sm text-gray-600">
-                        <img src="https://upload.wikimedia.org/wikipedia/id/thumb/a/a4/Logo_SMK_Negeri_1_Purbalingga.png/960px-Logo_SMK_Negeri_1_Purbalingga.png" 
-                             alt="Logo SMK Negeri 1 Purbalingga" class="h-8 w-auto">
-                        <span>SMK Negeri 1 Purbalingga</span>
-                    </div>
-                </div>
-                <div class="overflow-x-auto rounded-lg border border-gray-200">
-                    <table class="min-w-full divide-y divide-gray-200 text-center">
-                        <thead id="tableHeadMatriks" class="bg-gray-100">
-                            <!-- Header dinamis diisi JS -->
-                        </thead>
-                        <tbody id="tableBodyMatriks" class="bg-white divide-y divide-gray-200">
-                            <tr><td class="p-4 text-center text-gray-500">Belum ada data diproses.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Konten Tab 4: Daftar Soal & Analisis -->
-            <div id="daftarSoal" class="tab-content">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-2xl font-bold text-gray-800">Hasil 4: Daftar Soal & Analisis Tingkat Kesulitan</h2>
-                    <div class="flex items-center space-x-2 text-sm text-gray-600">
-                        <img src="https://upload.wikimedia.org/wikipedia/id/thumb/a/a4/Logo_SMK_Negeri_1_Purbalingga.png/960px-Logo_SMK_Negeri_1_Purbalingga.png" 
-                             alt="Logo SMK Negeri 1 Purbalingga" class="h-8 w-auto">
-                        <span>SMK Negeri 1 Purbalingga</span>
+                <!-- Input Soal -->
+                <div class="mt-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Input Soal</h3>
+                    <div id="soalContainer" class="space-y-4">
+                        <!-- Soal akan diisi oleh JavaScript -->
                     </div>
                 </div>
                 
-                <!-- Identitas Ujian di Daftar Soal -->
-                <div class="mb-6 p-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg text-white">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <h3 class="font-bold text-lg mb-2">Identitas Ujian</h3>
-                            <p><span class="font-semibold">Mata Pelajaran:</span> <span id="soal-mapel">-</span></p>
-                            <p><span class="font-semibold">Kelas:</span> <span id="soal-kelas">-</span></p>
-                            <p><span class="font-semibold">Fase:</span> <span id="soal-fase">-</span></p>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-lg mb-2">Detail Ujian</h3>
-                            <p><span class="font-semibold">Guru Mapel:</span> <span id="soal-guru">-</span></p>
-                            <p><span class="font-semibold">Jenis Ujian:</span> <span id="soal-jenis-ujian">-</span></p>
-                            <p><span class="font-semibold">Tanggal:</span> <span id="soal-tanggal">-</span></p>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <p><span class="font-semibold">Tujuan Pembelajaran:</span> <span id="soal-tp">-</span></p>
-                    </div>
+                <!-- Tips Navigasi -->
+                <div class="mt-6 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <p class="text-xs text-green-800">
+                        <strong>Tips:</strong> Gunakan tombol panah (← → ↑ ↓) untuk navigasi cepat antar sel. Input akan otomatis kapital.
+                    </p>
                 </div>
+            </div>
+        </section>
 
-                <!-- Filter Kategori -->
-                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Filter Soal Berdasarkan Kategori:</h3>
-                    <div class="flex flex-wrap gap-2">
-                        <button class="filter-btn active bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition" data-kategori="all">
-                            Semua Soal
-                        </button>
-                        <button class="filter-btn bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition" data-kategori="sulit">
-                            Soal Sulit
-                        </button>
-                        <button class="filter-btn bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition" data-kategori="sedang">
-                            Soal Sedang
-                        </button>
-                        <button class="filter-btn bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition" data-kategori="mudah">
-                            Soal Mudah
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Statistik Ringkas -->
-                <div class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
-                        <div class="text-sm text-gray-600">Total Soal</div>
-                        <div class="text-2xl font-bold text-gray-800" id="totalSoal">0</div>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-red-500">
-                        <div class="text-sm text-gray-600">Soal Sulit</div>
-                        <div class="text-2xl font-bold text-red-600" id="soalSulit">0</div>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-yellow-500">
-                        <div class="text-sm text-gray-600">Soal Sedang</div>
-                        <div class="text-2xl font-bold text-yellow-600" id="soalSedang">0</div>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-green-500">
-                        <div class="text-sm text-gray-600">Soal Mudah</div>
-                        <div class="text-2xl font-bold text-green-600" id="soalMudah">0</div>
-                    </div>
-                </div>
-
-                <!-- Daftar Soal -->
-                <div id="daftarSoalContainer" class="space-y-4">
-                    <div class="text-center p-8 text-gray-500">
-                        <p>Belum ada data soal yang diproses.</p>
-                        <p class="text-sm">Klik "Proses Analisis Data" untuk melihat analisis soal.</p>
-                    </div>
-                </div>
-
-                <!-- Approval Section -->
-                <div class="print-approval">
-                    <div class="text-center">
-                        <p>Guru Mata Pelajaran</p>
-                        <div class="ttd-area">
-                            <div class="ttd-line"></div>
-                            <p id="approval-guru" class="mt-2 font-semibold">-</p>
-                            <p>NIP. <span id="approval-nip">-</span></p>
-                        </div>
-                    </div>
-                    
-                    <div class="text-center">
-                        <p>Waka Kurikulum</p>
-                        <div class="ttd-area">
-                            <img src="https://ik.imagekit.io/szyueti8m/Tanpa%20judul%20(3,370%20x%202,125).png?updatedAt=1761383002551" 
-                                 alt="TTD Waka Kurikulum" class="h-16 mx-auto mb-2">
-                            <div class="ttd-line"></div>
-                            <p class="mt-2 font-semibold">Satyo Nugroho, S.Kom</p>
-                            <p>NIP. 197807142009031006</p>
-                        </div>
-                    </div>
-                    
-                    <div class="text-center">
-                        <p>Kepala Sekolah</p>
-                        <div class="ttd-area">
-                            <img src="https://ik.imagekit.io/szyueti8m/ttd%20KS%20-%20Diedit%20-%20Diedit%20-%20Diedit.png?updatedAt=1761382931279" 
-                                 alt="TTD Kepala Sekolah" class="h-16 mx-auto mb-2">
-                            <div class="ttd-line"></div>
-                            <p class="mt-2 font-semibold">Maryono, S.Pd., M.Si</p>
-                            <p>NIP. 196607012000121002</p>
-                        </div>
-                    </div>
-                </div>
+        <!-- Section 3: Hasil Analisis -->
+        <section id="hasil-section" class="mb-6 p-6 bg-white rounded-lg shadow-lg section-card hidden">
+            <!-- Konten hasil analisis akan diisi oleh JavaScript -->
+            <div class="text-center p-8 text-gray-500">
+                <p>Belum ada data yang diproses.</p>
+                <p class="text-sm">Klik "Proses Analisis Data" untuk melihat hasil analisis.</p>
             </div>
         </section>
     </div>
@@ -645,102 +503,53 @@
             "Maryono S.Pd, M.Si": "196607012000121002", 
             "Satyo Nugroho, S.Kom.": "197807142009031006",
             "Dra. Sri Mularsih": "196706201994122001", 
-            "Drs. Fiva Widiarto": "196510231996011002", 
-            "Wahyu Budi Susapti, S.Pd, MM.": "197207291997022002", 
-            "Marwoto, S.Pd, S.Kom": "196904082000121001", 
-            "Sri Endah Swarastuti, S.Pd": "197407022003122004", 
-            "Dra. Cukat Budi Rahayu": "196901121994032010", 
-            "Dra. Diah Ayu Supriyanti": "196603261994122004", 
-            "Justina Trirahaju Leksanawati, S.Pd., M.Si.": "197104162003122006", 
-            "Sri Wahyuni, S.Pd": "197008022002122004", 
-            "Dwi Agus Tri M.M., S.Pd": "197102232002122004", 
-            "Sumardi, S.Pd., S.Kom": "197305272003121002", 
-            "Agung Pamuji, S.Pd": "197402132005011008", 
-            "Retnowati, S.Pd": "197303272005012009", 
-            "Tony Eka Martin Wibowo, S.Si.": "197912092005011004", 
-            "Nur Romlah, S.Pd": "197509082008012008", 
-            "Deddy Suwito, S.Kom": "197209022006041013", 
-            "Agus Wuryanto, S.Pd": "197503222006041002", 
-            "Tri Puji Utami, S.Kom": "198304252009032009", 
-            "Puji Pertiwi Sayekti, S.Pd": "196805102005012011", 
-            "Nur Fajriyahti, S.Pd.": "197005212007012014", 
-            "Srirahayu, S.Pd.": "197408042008012009", 
-            "Romidin, S.Pd": "197505052008011021", 
-            "Teguh Cahyono, S.Pd.": "198110232006041010", 
-            "Seto Eko Purwanto, S.Si": "197804232010011009", 
-            "Nelly Amaliyah, S.Psi": "197907032010012019", 
-            "Suratno, S.Pd": "198409032010011012", 
-            "Vektor Realita Aditopo, S.Pd": "198603312011011003", 
-            "Adi Setiawan, S.Pd.": "199012292014021001", 
-            "Galih Tyas Anjari, S.Pd.": "199201212014022001", 
-            "Deti Lestiyorini, S.Pd.": "198912142014022001", 
-            "Mahzun, S.Pd I": "197601072008011009", 
-            "Sugeng Pitoyo, S.Pd.": "197311032008011002", 
-            "Asriyatun, S.Pd": "199208262020122009", 
-            "Nur Laeli, S.Pd": "199704112020122011", 
-            "Sepudin Zupri, S.Kom": "197010222022211001", 
-            "Arif Nurokhman, S.Pd": "198010172022211002", 
-            "Elis Sugiarti, S.Pd.": "198503072022212028", 
-            "Sudiyarti, S.Pd": "198511182022212012", 
-            "Otiah, S.Pd.": "198802242022212013", 
-            "Novaristya Widyasmara Pamungkas, S.Pd": "198811042022211004", 
-            "Menik Yuni Hartini, S.Pd.": "198906292022212008", 
-            "Baiq Nur Aisyah, S.Pd.": "198909222022212005", 
-            "Sulistiono, S.Pd.": "199112202022211007", 
-            "Isria Rizqona Firdausyi, S.Pd.": "199201312022212011", 
-            "Hindun Fatmawati, S.Pd.": "199210042022212007", 
-            "Ana Nurlatifah, S.Pd.": "199304032022212014", 
-            "Dwi Inayah Rahmawati, M.Pd.": "199311282022212011", 
-            "Danu Dwi Jatmiko, S.Pd.": "199401192022211003", 
-            "Restu Afri Widhi Hastutiningsih, S.Pd.": "199604032022212009", 
-            "Nining Setiani, S.Pd.": "199610102022212008", 
-            "Kukuh Pribadi, S.Pd.": "198610232022211006", 
-            "Yekti Apriyoni, S.Pd.": "197804272023212002", 
-            "Novita Adhimurti, S.Pd.": "197811142023212001", 
-            "Khamsyatun Yudiana, S.Pd.I.": "198207132023212011", 
-            "Nanang Cahyana, S.Pd.Ing.": "198603172023211003", 
-            "Waskito Ismu Hastomo, S.Pd.": "198606092023211007", 
-            "Lely Erawati, S.Pd.": "198708212023212018", 
-            "Septian Endro Laksono, S.Pd.": "199009052023211004", 
-            "Firmanika Rozaqi, S.Pd.": "199104242023212024", 
-            "Devi Artati, S.Pd.": "199210112023212020", 
-            "Soviatun Khasanah, S.Pd.": "199606302023212006", 
-            "Miftah Iskandar, S.Pd.": "198512112023211006", 
-            "Dista Puspitasari Adi, S.Pd.": "198603182024212004", 
-            "Rita Wijiarti, S.Pd.": "199410172024212021", 
-            "Safa Aulia Astri, S.Sos": "199607212024212021", 
-            "Slamet Suparman, S.Pd.": "-", 
-            "Devi Dwi Wahyuni, S.Pd.": "-", 
-            "Agus Sutono, S.Pd.": "197406182025211007",
-            "Yanti Karadina, S.Pd.": "197512172025212006",
-            "Widia Sukaesih, S.E.": "197810082025212008",
-            "Triyanto, S.Pd.": "198411252025211021",
-            "Inayatul Munawaroh, S.Pd.": "199301062025212023",
-            "Danu Setio Aji, S.Pd.": "199310162025211021",
-            "Hera Dwi Suryandari, S.Pd.": "199312262025212012",
-            "Rindhi Rezqi Hertindha, M.Pd.": "-",
-            "Seli Fadriyah, S.Pd.": "-",
-            "Nurhidayah, S.S., M.Pd.": "-",
-            "Prana Prakasita, S.Pd.": "-",
-            "Rita Puspitasari, S.Pd.": "-",
-            "Ullil Hykmah, S.Pd.": "-",
-            "Muhammad Idris Afandi, S.S., M.Pd.": "-"
+            "Budi Santoso, S.Pd": "197512032005011002",
+            "Siti Aminah, M.Pd": "198203152008012003",
+            "Ahmad Fauzi, S.Kom": "198511202012031004"
         };
 
-        // Event Listeners
-        document.getElementById('prosesButton').addEventListener('click', prosesAnalisisData);
-        document.getElementById('printPdf').addEventListener('click', () => window.print());
-        document.getElementById('generateTableBtn').addEventListener('click', generateInputTable);
-        document.getElementById('toggleTableBtn').addEventListener('click', () => toggleInputMethod('table'));
-        document.getElementById('toggleTextareaBtn').addEventListener('click', () => toggleInputMethod('textarea'));
+        // Variabel global
+        let analisisSoalData = [];
+        let soalData = [];
 
-        // Inisialisasi data guru
+        // Inisialisasi
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('tanggalUjian').value = today;
             populateTeacherDropdown();
-            generateInputTable();
+            
+            // Navigation Event Listeners
+            document.getElementById('nav-input-btn').addEventListener('click', () => showSection('input-section'));
+            document.getElementById('nav-tabel-input-btn').addEventListener('click', () => showSection('tabel-input-section'));
+            document.getElementById('nav-hasil-btn').addEventListener('click', () => showSection('hasil-section'));
+            
+            document.getElementById('kembaliDariTabelBtn').addEventListener('click', () => showSection('input-section'));
+            
+            document.getElementById('printTabelBtn').addEventListener('click', printTabelInput);
+            
+            // Event Listeners lainnya
+            document.getElementById('prosesButton').addEventListener('click', prosesAnalisisData);
+            document.getElementById('generateTableBtn').addEventListener('click', generateInputTable);
+
+            // Tampilkan section input secara default
+            showSection('input-section');
         });
+
+        // Fungsi untuk menampilkan section tertentu
+        function showSection(sectionId) {
+            // Sembunyikan semua section
+            document.getElementById('input-section').classList.add('hidden');
+            document.getElementById('tabel-input-section').classList.add('hidden');
+            document.getElementById('hasil-section').classList.add('hidden');
+            
+            // Tampilkan section yang dipilih
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Update informasi di tabel input section
+            if (sectionId === 'tabel-input-section') {
+                updateTabelInfo();
+            }
+        }
 
         // Fungsi untuk mengisi dropdown guru
         function populateTeacherDropdown() {
@@ -762,34 +571,14 @@
             });
         }
 
-        // Variabel global untuk menyimpan data analisis soal
-        let analisisSoalData = [];
-
-        // Fungsi untuk toggle antara tabel dan textarea
-        function toggleInputMethod(method) {
-            const tableInput = document.getElementById('tableInput');
-            const textareaInput = document.getElementById('textareaInput');
-            const tableBtn = document.getElementById('toggleTableBtn');
-            const textareaBtn = document.getElementById('toggleTextareaBtn');
-            
-            if (method === 'table') {
-                tableInput.classList.remove('hidden');
-                textareaInput.classList.add('hidden');
-                tableBtn.classList.remove('bg-gray-300', 'text-gray-700');
-                tableBtn.classList.add('bg-blue-600', 'text-white');
-                textareaBtn.classList.remove('bg-blue-600', 'text-white');
-                textareaBtn.classList.add('bg-gray-300', 'text-gray-700');
-            } else {
-                tableInput.classList.add('hidden');
-                textareaInput.classList.remove('hidden');
-                textareaBtn.classList.remove('bg-gray-300', 'text-gray-700');
-                textareaBtn.classList.add('bg-blue-600', 'text-white');
-                tableBtn.classList.remove('bg-blue-600', 'text-white');
-                tableBtn.classList.add('bg-gray-300', 'text-gray-700');
-            }
+        // Fungsi untuk update informasi di tabel input section
+        function updateTabelInfo() {
+            document.getElementById('tabel-mapel').textContent = document.getElementById('namaMapel').value || '-';
+            document.getElementById('tabel-kelas').textContent = document.getElementById('kelas').value || '-';
+            document.getElementById('tabel-jumlah-soal').textContent = document.getElementById('jumlahSoal').value || '-';
         }
 
-        // Fungsi untuk membuat tabel input
+        // Fungsi untuk generate form input
         function generateInputTable() {
             const jumlahSoal = parseInt(document.getElementById('jumlahSoal').value);
             const jumlahSiswa = parseInt(document.getElementById('jumlahSiswa').value);
@@ -799,40 +588,52 @@
                 return;
             }
             
-            // Generate header tabel
+            // Generate untuk tabel interaktif
+            generateInteractiveTable(jumlahSoal, jumlahSiswa);
+            
+            // Generate untuk tabel print
+            generatePrintTable(jumlahSoal, jumlahSiswa);
+            
+            // Generate input soal
+            generateSoalInput(jumlahSoal);
+            
+            showInfo(`Form input berhasil dibuat untuk ${jumlahSiswa} siswa dan ${jumlahSoal} soal. Buka lembar "Input Jawaban & Soal" untuk mengisi data.`, 'success');
+        }
+
+        // Fungsi untuk generate tabel interaktif
+        function generateInteractiveTable(jumlahSoal, jumlahSiswa) {
             const tableHeader = document.getElementById('tableHeader');
             let headerHTML = `
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">No</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">NIS</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Nama Siswa</th>
+                <th class="px-2 py-1 text-left text-xs font-medium text-gray-600 uppercase w-12">No</th>
+                <th class="px-2 py-1 text-left text-xs font-medium text-gray-600 uppercase w-20">NIS</th>
+                <th class="px-2 py-1 text-left text-xs font-medium text-gray-600 uppercase w-32">Nama Siswa</th>
             `;
             
             for (let i = 1; i <= jumlahSoal; i++) {
-                headerHTML += `<th class="px-2 py-3 text-xs font-medium text-gray-600 uppercase">Soal ${i}</th>`;
+                headerHTML += `<th class="px-1 py-1 text-xs font-medium text-gray-600 uppercase w-8">${i}</th>`;
             }
             
             tableHeader.innerHTML = headerHTML;
             
-            // Generate body tabel
             const tableBody = document.getElementById('tableBody');
             let bodyHTML = '';
             
             for (let i = 0; i < jumlahSiswa; i++) {
                 bodyHTML += `
                     <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-2 text-sm text-gray-900">${i + 1}</td>
-                        <td class="px-4 py-2">
-                            <input type="text" class="w-full p-1 border border-gray-300 rounded nis-input" placeholder="NIS" value="${1001 + i}">
+                        <td class="px-2 py-1 text-xs text-gray-900 text-center">${i + 1}</td>
+                        <td class="px-2 py-1">
+                            <input type="text" class="w-full p-1 border border-gray-300 rounded input-kecil nis-input" placeholder="NIS" value="${1001 + i}">
                         </td>
-                        <td class="px-4 py-2">
-                            <input type="text" class="w-full p-1 border border-gray-300 rounded nama-input" placeholder="Nama Siswa" value="Siswa ${i + 1}">
+                        <td class="px-2 py-1">
+                            <input type="text" class="w-full p-1 border border-gray-300 rounded input-kecil nama-input" placeholder="Nama" value="Siswa ${i + 1}">
                         </td>
                 `;
                 
                 for (let j = 0; j < jumlahSoal; j++) {
                     bodyHTML += `
-                        <td class="px-2 py-2">
-                            <input type="text" class="w-full p-1 border border-gray-300 rounded jawaban-input" maxlength="1" placeholder="" data-soal="${j + 1}">
+                        <td class="px-1 py-1">
+                            <input type="text" class="w-full p-1 border border-gray-300 rounded table-input jawaban-input" maxlength="1" placeholder="" data-soal="${j + 1}">
                         </td>
                     `;
                 }
@@ -841,15 +642,256 @@
             }
             
             tableBody.innerHTML = bodyHTML;
+            setupTableNavigation();
+        }
+
+        // Fungsi untuk setup navigasi tabel
+        function setupTableNavigation() {
+            const inputs = document.querySelectorAll('.table-input');
             
-            // Auto-uppercase untuk input jawaban
-            document.querySelectorAll('.jawaban-input').forEach(input => {
+            inputs.forEach(input => {
+                // Auto uppercase
                 input.addEventListener('input', function() {
                     this.value = this.value.toUpperCase();
+                    updatePrintTable();
+                    
+                    // Auto focus ke input berikutnya
+                    if (this.value.length === 1) {
+                        const nextInput = this.closest('td').nextElementSibling?.querySelector('input');
+                        if (nextInput) {
+                            nextInput.focus();
+                            nextInput.select();
+                        }
+                    }
+                });
+
+                // Navigasi dengan keyboard
+                input.addEventListener('keydown', function(e) {
+                    const currentCell = this.closest('td');
+                    const currentRow = this.closest('tr');
+                    const allRows = Array.from(document.querySelectorAll('#tableBody tr'));
+                    const currentRowIndex = allRows.indexOf(currentRow);
+                    const allCells = Array.from(currentRow.querySelectorAll('td'));
+                    const currentCellIndex = allCells.indexOf(currentCell);
+                    
+                    switch(e.key) {
+                        case 'ArrowRight':
+                            e.preventDefault();
+                            const nextCell = allCells[currentCellIndex + 1];
+                            if (nextCell) {
+                                const nextInput = nextCell.querySelector('input');
+                                if (nextInput) {
+                                    nextInput.focus();
+                                    nextInput.select();
+                                }
+                            }
+                            break;
+                            
+                        case 'ArrowLeft':
+                            e.preventDefault();
+                            const prevCell = allCells[currentCellIndex - 1];
+                            if (prevCell) {
+                                const prevInput = prevCell.querySelector('input');
+                                if (prevInput) {
+                                    prevInput.focus();
+                                    prevInput.select();
+                                }
+                            }
+                            break;
+                            
+                        case 'ArrowDown':
+                            e.preventDefault();
+                            const nextRow = allRows[currentRowIndex + 1];
+                            if (nextRow) {
+                                const nextRowCells = Array.from(nextRow.querySelectorAll('td'));
+                                const nextInput = nextRowCells[currentCellIndex]?.querySelector('input');
+                                if (nextInput) {
+                                    nextInput.focus();
+                                    nextInput.select();
+                                }
+                            }
+                            break;
+                            
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            const prevRow = allRows[currentRowIndex - 1];
+                            if (prevRow) {
+                                const prevRowCells = Array.from(prevRow.querySelectorAll('td'));
+                                const prevInput = prevRowCells[currentCellIndex]?.querySelector('input');
+                                if (prevInput) {
+                                    prevInput.focus();
+                                    prevInput.select();
+                                }
+                            }
+                            break;
+                    }
+                });
+
+                // Select all text when focused
+                input.addEventListener('focus', function() {
+                    this.select();
                 });
             });
+        }
+
+        // Fungsi untuk generate input soal
+        function generateSoalInput(jumlahSoal) {
+            const soalContainer = document.getElementById('soalContainer');
+            let soalHTML = '';
             
-            showInfo(`Tabel input berhasil dibuat untuk ${jumlahSiswa} siswa dan ${jumlahSoal} soal.`, 'success');
+            for (let i = 1; i <= jumlahSoal; i++) {
+                soalHTML += `
+                    <div class="bg-white p-4 rounded-lg border border-gray-200">
+                        <div class="flex items-start justify-between mb-3">
+                            <h4 class="font-semibold text-gray-800">Soal Nomor ${i}</h4>
+                            <span class="text-xs text-gray-500">Kunci: <span class="font-bold">${getKunciJawaban(i)}</span></span>
+                        </div>
+                        <textarea 
+                            id="soal-${i}" 
+                            class="w-full p-3 border border-gray-300 rounded-lg shadow-sm soal-textarea" 
+                            placeholder="Tuliskan soal nomor ${i} di sini..."
+                            oninput="updatePrintSoal(${i})"
+                        ></textarea>
+                    </div>
+                `;
+            }
+            
+            soalContainer.innerHTML = soalHTML;
+            
+            // Generate untuk print
+            generatePrintSoal(jumlahSoal);
+        }
+
+        // Fungsi untuk mendapatkan kunci jawaban
+        function getKunciJawaban(noSoal) {
+            const kunciJawabanStr = document.getElementById('kunciJawaban').value.trim();
+            if (!kunciJawabanStr) return '-';
+            
+            const kunci = kunciJawabanStr.split(',').map(k => k.trim().toUpperCase());
+            return kunci[noSoal - 1] || '-';
+        }
+
+        // Fungsi untuk generate soal untuk print
+        function generatePrintSoal(jumlahSoal) {
+            const printSoalContainer = document.getElementById('printSoalContainer');
+            let printSoalHTML = '';
+            
+            for (let i = 1; i <= jumlahSoal; i++) {
+                printSoalHTML += `
+                    <div class="mb-4 p-3 border-b border-gray-300">
+                        <div class="flex justify-between items-start mb-2">
+                            <strong>Soal Nomor ${i}</strong>
+                            <span class="text-sm">Kunci: <strong>${getKunciJawaban(i)}</strong></span>
+                        </div>
+                        <div id="print-soal-${i}" class="text-sm whitespace-pre-wrap">
+                            [Soal akan ditampilkan di sini]
+                        </div>
+                    </div>
+                `;
+            }
+            
+            printSoalContainer.innerHTML = printSoalHTML;
+        }
+
+        // Fungsi untuk update soal di print
+        function updatePrintSoal(noSoal) {
+            const soalText = document.getElementById(`soal-${noSoal}`).value;
+            const printSoalElement = document.getElementById(`print-soal-${noSoal}`);
+            if (printSoalElement) {
+                printSoalElement.textContent = soalText || '[Soal akan ditampilkan di sini]';
+            }
+        }
+
+        // Fungsi untuk generate tabel untuk print
+        function generatePrintTable(jumlahSoal, jumlahSiswa) {
+            const printHeader = document.getElementById('printTableHeader');
+            let printHeaderHTML = `
+                <th class="border border-gray-300 px-2 py-1 font-bold text-center">No</th>
+                <th class="border border-gray-300 px-2 py-1 font-bold">NIS</th>
+                <th class="border border-gray-300 px-2 py-1 font-bold">Nama Siswa</th>
+            `;
+            
+            for (let i = 1; i <= jumlahSoal; i++) {
+                printHeaderHTML += `<th class="border border-gray-300 px-1 py-1 font-bold text-center">${i}</th>`;
+            }
+            
+            printHeader.innerHTML = printHeaderHTML;
+            
+            const printBody = document.getElementById('printTableBody');
+            let printBodyHTML = '';
+            
+            for (let i = 0; i < jumlahSiswa; i++) {
+                printBodyHTML += `
+                    <tr>
+                        <td class="border border-gray-300 px-2 py-1 text-center">${i + 1}</td>
+                        <td class="border border-gray-300 px-2 py-1">${1001 + i}</td>
+                        <td class="border border-gray-300 px-2 py-1">Siswa ${i + 1}</td>
+                `;
+                
+                for (let j = 0; j < jumlahSoal; j++) {
+                    printBodyHTML += `<td class="border border-gray-300 px-1 py-1 text-center"></td>`;
+                }
+                
+                printBodyHTML += `</tr>`;
+            }
+            
+            printBody.innerHTML = printBodyHTML;
+        }
+
+        // Fungsi untuk update tabel print berdasarkan input
+        function updatePrintTable() {
+            const rows = document.querySelectorAll('#tableBody tr');
+            const printRows = document.querySelectorAll('#printTableBody tr');
+            
+            rows.forEach((row, rowIndex) => {
+                const nis = row.querySelector('.nis-input').value;
+                const nama = row.querySelector('.nama-input').value;
+                const jawabanInputs = row.querySelectorAll('.jawaban-input');
+                const printCells = printRows[rowIndex].querySelectorAll('td');
+                
+                // Update NIS dan Nama
+                printCells[1].textContent = nis;
+                printCells[2].textContent = nama;
+                
+                // Update jawaban
+                jawabanInputs.forEach((input, cellIndex) => {
+                    printCells[cellIndex + 3].textContent = input.value;
+                });
+            });
+        }
+
+        // Fungsi untuk print tabel input saja
+        function printTabelInput() {
+            const originalTitle = document.title;
+            document.title = "Form Input Jawaban - " + (document.getElementById('namaMapel').value || 'Ujian');
+            
+            // Update tabel print terlebih dahulu
+            updatePrintTable();
+            
+            // Simpan state elemen yang akan diubah
+            const elementsToHide = document.querySelectorAll('.no-print');
+            const originalDisplay = [];
+            
+            // Sembunyikan elemen yang tidak perlu
+            elementsToHide.forEach(el => {
+                originalDisplay.push(el.style.display);
+                el.style.display = 'none';
+            });
+            
+            // Tampilkan elemen print
+            document.querySelector('.print-tabel-input').style.display = 'block';
+            document.querySelector('.print-soal').style.display = 'block';
+            
+            // Print
+            window.print();
+            
+            // Kembalikan state semula
+            elementsToHide.forEach((el, index) => {
+                el.style.display = originalDisplay[index];
+            });
+            document.querySelector('.print-tabel-input').style.display = 'none';
+            document.querySelector('.print-soal').style.display = 'none';
+            document.title = originalTitle;
         }
 
         // Fungsi untuk mengumpulkan data dari tabel input
@@ -871,7 +913,336 @@
             return data.join('\n');
         }
 
-        // Fungsi untuk update identitas ujian di hasil analisis
+        // Fungsi untuk validasi data
+        function validateData(dataSiswaStr) {
+            const kunciJawabanStr = document.getElementById('kunciJawaban').value.trim();
+            const jumlahSoal = parseInt(document.getElementById('jumlahSoal').value);
+            
+            if (!kunciJawabanStr) {
+                showInfo('Error: Kunci Jawaban tidak boleh kosong.');
+                return false;
+            }
+            
+            if (!dataSiswaStr) {
+                showInfo('Error: Data siswa tidak boleh kosong.');
+                return false;
+            }
+            
+            const kunci = kunciJawabanStr.split(',').map(k => k.trim().toUpperCase());
+            if (kunci.length !== jumlahSoal) {
+                showInfo(`Error: Jumlah Kunci Jawaban (${kunci.length}) tidak sesuai dengan Jumlah Soal (${jumlahSoal}).`);
+                return false;
+            }
+            
+            const lines = dataSiswaStr.split('\n').filter(line => line.trim() !== "");
+            if (lines.length === 0) {
+                showInfo('Error: Tidak ada data siswa untuk diproses.');
+                return false;
+            }
+            
+            // Validasi setiap baris data siswa
+            for (let i = 0; i < lines.length; i++) {
+                const parts = lines[i].split(',');
+                if (parts.length < (2 + jumlahSoal)) {
+                    showInfo(`Error di baris ${i + 1}: Data tidak lengkap. Pastikan jumlah jawaban sesuai dengan jumlah soal.`);
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        // Fungsi utama untuk proses analisis data
+        function prosesAnalisisData() {
+            // Update identitas ujian terlebih dahulu
+            updateIdentitasUjian();
+            
+            // Kumpulkan data dari tabel input
+            const dataSiswaStr = collectDataFromTable();
+            
+            // Validasi data
+            if (!validateData(dataSiswaStr)) {
+                return;
+            }
+            
+            // Lakukan analisis
+            const hasilAnalisis = lakukanAnalisis(dataSiswaStr);
+            
+            // Tampilkan hasil
+            tampilkanHasilAnalisis(hasilAnalisis);
+            
+            showInfo(`Analisis berhasil diproses untuk ${hasilAnalisis.totalSiswa} siswa.`, 'success');
+            showSection('hasil-section');
+        }
+
+        // Fungsi untuk melakukan analisis data
+        function lakukanAnalisis(dataSiswaStr) {
+            const kkm = parseFloat(document.getElementById('kkm').value);
+            const jumlahSoal = parseInt(document.getElementById('jumlahSoal').value);
+            const kunciJawabanStr = document.getElementById('kunciJawaban').value.trim();
+            const kunci = kunciJawabanStr.split(',').map(k => k.trim().toUpperCase());
+            const lines = dataSiswaStr.split('\n').filter(line => line.trim() !== "");
+            
+            // Inisialisasi analisis soal
+            let analisisSoal = [];
+            for (let i = 0; i < jumlahSoal; i++) {
+                analisisSoal.push({ 
+                    no: i + 1, 
+                    kunci: kunci[i], 
+                    benar: 0,
+                    soalText: document.getElementById(`soal-${i + 1}`)?.value || `Soal nomor ${i + 1}`
+                });
+            }
+
+            let analisisSiswa = [];
+            const totalSiswa = lines.length;
+
+            // Proses setiap siswa
+            lines.forEach((line, index) => {
+                const parts = line.split(',').map(p => p.trim());
+                const nis = parts[0];
+                const nama = parts[1];
+                const jawabanSiswa = parts.slice(2, 2 + jumlahSoal);
+
+                let jumlahBenar = 0;
+
+                // Hitung jawaban benar per soal
+                for (let i = 0; i < jumlahSoal; i++) {
+                    let jawaban = jawabanSiswa[i] ? jawabanSiswa[i].toUpperCase() : "-";
+                    if (jawaban.trim() === "") jawaban = "-";
+
+                    if (jawaban === kunci[i]) {
+                        jumlahBenar++;
+                        analisisSoal[i].benar++;
+                    }
+                }
+
+                // Hitung nilai siswa
+                const nilaiAkhir = (jumlahBenar / jumlahSoal) * 10;
+                const status = (nilaiAkhir >= kkm) ? 'Tuntas' : 'Remedial';
+
+                analisisSiswa.push({ 
+                    nis, 
+                    nama, 
+                    jumlahBenar, 
+                    nilaiAkhir, 
+                    status,
+                    jawaban: jawabanSiswa
+                });
+            });
+
+            // Hitung tingkat kesukaran (P) untuk setiap soal
+            analisisSoal.forEach(soal => {
+                soal.P = soal.benar / totalSiswa;
+                
+                // Tentukan kategori
+                if (soal.P < 0.30) {
+                    soal.kategori = 'Sulit';
+                } else if (soal.P <= 0.70) {
+                    soal.kategori = 'Sedang';
+                } else {
+                    soal.kategori = 'Mudah';
+                }
+            });
+
+            return {
+                analisisSoal,
+                analisisSiswa,
+                totalSiswa,
+                jumlahSoal,
+                kkm
+            };
+        }
+
+        // Fungsi untuk menampilkan hasil analisis
+        function tampilkanHasilAnalisis(hasil) {
+            const hasilSection = document.getElementById('hasil-section');
+            
+            // Buat konten hasil analisis
+            let hasilHTML = `
+                <!-- Navigasi Tab -->
+                <div id="tab-buttons" class="border-b border-gray-200 mb-4">
+                    <nav class="flex -mb-px space-x-6 overflow-x-auto">
+                        <button class="tab-button active py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap text-sm" onclick="showTab('analisisSoal')">
+                            1. Analisis Butir Soal
+                        </button>
+                        <button class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap text-sm" onclick="showTab('analisisSiswa')">
+                            2. Analisis Siswa
+                        </button>
+                        <button class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap text-sm" onclick="showTab('matriksJawaban')">
+                            3. Matriks Jawaban
+                        </button>
+                        <button class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap text-sm" onclick="showTab('daftarSoal')">
+                            4. Daftar Soal & Analisis
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Identitas Ujian di Hasil Analisis -->
+                <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                            <span class="font-semibold text-blue-800">Mata Pelajaran:</span>
+                            <span id="display-mapel" class="text-blue-900">${document.getElementById('namaMapel').value || '-'}</span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-blue-800">Kelas:</span>
+                            <span id="display-kelas" class="text-blue-900">${document.getElementById('kelas').value || '-'}</span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-blue-800">Fase:</span>
+                            <span id="display-fase" class="text-blue-900">${document.getElementById('fase').value || '-'}</span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-blue-800">Guru Mapel:</span>
+                            <span id="display-guru" class="text-blue-900">${document.getElementById('guruMapel').value || '-'}</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-sm">
+                        <span class="font-semibold text-blue-800">Tujuan Pembelajaran:</span>
+                        <span id="display-tp" class="text-blue-900">${document.getElementById('tujuanPembelajaran').value || '-'}</span>
+                    </div>
+                </div>
+
+                <!-- Tombol Aksi Output -->
+                <div id="action-buttons" class="flex flex-wrap gap-4 mb-4 no-print">
+                    <button onclick="window.print()" class="bg-red-600 text-white py-2 px-5 rounded-lg shadow hover:bg-red-700 transition duration-300 text-sm">
+                        Cetak Semua Laporan
+                    </button>
+                    <button onclick="showSection('input-section')" class="bg-gray-600 text-white py-2 px-5 rounded-lg shadow hover:bg-gray-700 transition duration-300 text-sm">
+                        ← Kembali ke Input
+                    </button>
+                </div>
+
+                <!-- Tab 1: Analisis Butir Soal -->
+                <div id="analisisSoal" class="tab-content active">
+                    ${generateAnalisisSoalHTML(hasil)}
+                </div>
+
+                <!-- Tab 2: Analisis Siswa -->
+                <div id="analisisSiswa" class="tab-content">
+                    ${generateAnalisisSiswaHTML(hasil)}
+                </div>
+
+                <!-- Tab 3: Matriks Jawaban -->
+                <div id="matriksJawaban" class="tab-content">
+                    ${generateMatriksJawabanHTML(hasil)}
+                </div>
+
+                <!-- Tab 4: Daftar Soal & Analisis -->
+                <div id="daftarSoal" class="tab-content">
+                    ${generateDaftarSoalHTML(hasil)}
+                </div>
+            `;
+            
+            hasilSection.innerHTML = hasilHTML;
+        }
+
+        // Fungsi untuk generate HTML analisis soal
+        function generateAnalisisSoalHTML(hasil) {
+            let html = `
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">Hasil 1: Analisis Butir Soal (Tingkat Kesukaran)</h2>
+                    <div class="flex items-center space-x-2 text-sm text-gray-600">
+                        <img src="https://upload.wikimedia.org/wikipedia/id/thumb/a/a4/Logo_SMK_Negeri_1_Purbalingga.png/960px-Logo_SMK_Negeri_1_Purbalingga.png" 
+                             alt="Logo SMK Negeri 1 Purbalingga" class="h-8 w-auto">
+                        <span>SMK Negeri 1 Purbalingga</span>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-600 mb-4">Kategori: Sulit (P &lt; 0.30), Sedang (0.30 &le; P &le; 0.70), Mudah (P &gt; 0.70).</p>
+                <div class="overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200 text-sm">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">No. Soal</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">Kunci</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">Jml Benar</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">Total Siswa</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">Tingkat Kesukaran (P)</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">Kategori</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            hasil.analisisSoal.forEach(soal => {
+                const kategoriClass = soal.kategori === 'Sulit' ? 'text-red-700 font-bold' : 
+                                   soal.kategori === 'Sedang' ? 'text-yellow-700 font-bold' : 'text-green-700 font-bold';
+                
+                html += `
+                    <tr>
+                        <td class="px-4 py-2 text-sm text-gray-900">${soal.no}</td>
+                        <td class="px-4 py-2 text-sm text-gray-900 font-bold">${soal.kunci}</td>
+                        <td class="px-4 py-2 text-sm text-gray-900">${soal.benar}</td>
+                        <td class="px-4 py-2 text-sm text-gray-900">${hasil.totalSiswa}</td>
+                        <td class="px-4 py-2 text-sm text-gray-900">${soal.P.toFixed(2)}</td>
+                        <td class="px-4 py-2 text-sm ${kategoriClass}">${soal.kategori}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            return html;
+        }
+
+        // Fungsi untuk generate HTML analisis siswa
+        function generateAnalisisSiswaHTML(hasil) {
+            let html = `
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">Hasil 2: Analisis Siswa (Status Remedial)</h2>
+                    <div class="flex items-center space-x-2 text-sm text-gray-600">
+                        <img src="https://upload.wikimedia.org/wikipedia/id/thumb/a/a4/Logo_SMK_Negeri_1_Purbalingga.png/960px-Logo_SMK_Negeri_1_Purbalingga.png" 
+                             alt="Logo SMK Negeri 1 Purbalingga" class="h-8 w-auto">
+                        <span>SMK Negeri 1 Purbalingga</span>
+                    </div>
+                </div>
+                <div class="overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200 text-sm">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">NIS</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">Nama Siswa</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">Jml Benar</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">Nilai</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            // Urutkan siswa: remedial dulu
+            hasil.analisisSiswa.sort((a, b) => a.status === 'Remedial' ? -1 : 1);
+            
+            hasil.analisisSiswa.forEach(siswa => {
+                const statusClass = siswa.status === 'Remedial' ? 'text-red-700 font-bold bg-red-50' : 'text-green-700';
+                const rowClass = siswa.status === 'Remedial' ? 'bg-red-50' : '';
+                
+                html += `
+                    <tr class="${rowClass}">
+                        <td class="px-4 py-2 text-sm text-gray-900">${siswa.nis}</td>
+                        <td class="px-4 py-2 text-sm text-gray-900">${siswa.nama}</td>
+                        <td class="px-4 py-2 text-sm text-gray-900">${siswa.jumlahBenar} / ${hasil.jumlahSoal}</td>
+                        <td class="px-4 py-2 text-sm text-gray-900 font-bold">${siswa.nilaiAkhir.toFixed(1)}</td>
+                        <td class="px-4 py-2 text-sm ${statusClass}">${siswa.status}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            return html;
+        }
+
+        // Fungsi untuk update identitas ujian
         function updateIdentitasUjian() {
             const namaMapel = document.getElementById('namaMapel').value || '-';
             const kelas = document.getElementById('kelas').value || '-';
@@ -891,22 +1262,6 @@
                     day: 'numeric'
                 }) : '-';
             
-            // Update display di hasil analisis
-            document.getElementById('display-mapel').textContent = namaMapel;
-            document.getElementById('display-kelas').textContent = kelas;
-            document.getElementById('display-fase').textContent = fase;
-            document.getElementById('display-guru').textContent = guruMapel;
-            document.getElementById('display-tp').textContent = tujuanPembelajaran;
-            
-            // Update di tab daftar soal
-            document.getElementById('soal-mapel').textContent = namaMapel;
-            document.getElementById('soal-kelas').textContent = kelas;
-            document.getElementById('soal-fase').textContent = fase;
-            document.getElementById('soal-guru').textContent = guruMapel;
-            document.getElementById('soal-tp').textContent = tujuanPembelajaran;
-            document.getElementById('soal-jenis-ujian').textContent = jenisUjian;
-            document.getElementById('soal-tanggal').textContent = tanggalDisplay;
-            
             // Update untuk print
             document.getElementById('print-mapel').textContent = namaMapel;
             document.getElementById('print-kelas').textContent = kelas;
@@ -914,10 +1269,26 @@
             document.getElementById('print-guru').textContent = guruMapel;
             document.getElementById('print-jenis-ujian').textContent = jenisUjian;
             document.getElementById('print-tanggal').textContent = tanggalDisplay;
+        }
 
-            // Update approval section
-            document.getElementById('approval-guru').textContent = guruMapel;
-            document.getElementById('approval-nip').textContent = nipGuru;
+        // Fungsi untuk menampilkan pesan info/error
+        function showInfo(message, type = 'error') {
+            const infoBox = document.getElementById('info-box');
+            infoBox.textContent = message;
+            infoBox.className = 'mt-4 p-4 text-center rounded-lg';
+            if (type === 'error') {
+                infoBox.classList.add('bg-red-100', 'text-red-800');
+            } else {
+                infoBox.classList.add('bg-green-100', 'text-green-800');
+            }
+            infoBox.classList.remove('hidden');
+            
+            // Auto hide setelah 5 detik untuk success message
+            if (type === 'success') {
+                setTimeout(() => {
+                    infoBox.classList.add('hidden');
+                }, 5000);
+            }
         }
 
         // Fungsi untuk ganti Tab
@@ -937,305 +1308,123 @@
             document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`).classList.add('active');
         }
 
-        // Fungsi untuk menampilkan pesan info/error
-        function showInfo(message, type = 'error') {
-            const infoBox = document.getElementById('info-box');
-            infoBox.textContent = message;
-            infoBox.className = 'mt-4 p-4 text-center rounded-lg'; // Reset
-            if (type === 'error') {
-                infoBox.classList.add('bg-red-100', 'text-red-800');
-            } else {
-                infoBox.classList.add('bg-green-100', 'text-green-800');
+        // Fungsi-fungsi generate HTML lainnya
+        function generateMatriksJawabanHTML(hasil) {
+            let html = `
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">Hasil 3: Matriks Jawaban Siswa</h2>
+                    <div class="flex items-center space-x-2 text-sm text-gray-600">
+                        <img src="https://upload.wikimedia.org/wikipedia/id/thumb/a/a4/Logo_SMK_Negeri_1_Purbalingga.png/960px-Logo_SMK_Negeri_1_Purbalingga.png" 
+                             alt="Logo SMK Negeri 1 Purbalingga" class="h-8 w-auto">
+                        <span>SMK Negeri 1 Purbalingga</span>
+                    </div>
+                </div>
+                <div class="overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200 text-xs">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-2 py-1 text-left font-medium text-gray-600 uppercase">NIS</th>
+                                <th class="px-2 py-1 text-left font-medium text-gray-600 uppercase">Nama</th>
+            `;
+            
+            // Header untuk nomor soal
+            for (let i = 1; i <= hasil.jumlahSoal; i++) {
+                html += `<th class="px-1 py-1 font-medium text-gray-600 uppercase text-center">${i}</th>`;
             }
-            infoBox.classList.remove('hidden');
+            
+            html += `
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            // Data siswa
+            hasil.analisisSiswa.forEach(siswa => {
+                const rowClass = siswa.status === 'Remedial' ? 'bg-red-50' : '';
+                html += `
+                    <tr class="${rowClass}">
+                        <td class="px-2 py-1 text-gray-900">${siswa.nis}</td>
+                        <td class="px-2 py-1 text-gray-900">${siswa.nama}</td>
+                `;
+                
+                // Jawaban per soal
+                siswa.jawaban.forEach((jawaban, index) => {
+                    const kunci = hasil.analisisSoal[index].kunci;
+                    const isCorrect = jawaban.toUpperCase() === kunci;
+                    const cellClass = isCorrect ? 'text-green-600 font-bold' : 'text-red-600';
+                    const symbol = isCorrect ? '✓' : (jawaban === '-' ? '' : '✗');
+                    
+                    html += `<td class="px-1 py-1 text-center ${cellClass}">${symbol}</td>`;
+                });
+                
+                html += `</tr>`;
+            });
+            
+            // Baris kunci jawaban
+            html += `
+                    <tr class="bg-blue-50 font-bold">
+                        <td class="px-2 py-1" colspan="2">KUNCI JAWABAN</td>
+            `;
+            
+            hasil.analisisSoal.forEach(soal => {
+                html += `<td class="px-1 py-1 text-center text-blue-700">${soal.kunci}</td>`;
+            });
+            
+            html += `
+                    </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            return html;
         }
 
-        // Fungsi untuk menampilkan daftar soal
-        function tampilkanDaftarSoal(analisisSoal) {
-            const container = document.getElementById('daftarSoalContainer');
-            let html = '';
+        function generateDaftarSoalHTML(hasil) {
+            let html = `
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">Hasil 4: Daftar Soal & Analisis</h2>
+                    <div class="flex items-center space-x-2 text-sm text-gray-600">
+                        <img src="https://upload.wikimedia.org/wikipedia/id/thumb/a/a4/Logo_SMK_Negeri_1_Purbalingga.png/960px-Logo_SMK_Negeri_1_Purbalingga.png" 
+                             alt="Logo SMK Negeri 1 Purbalingga" class="h-8 w-auto">
+                        <span>SMK Negeri 1 Purbalingga</span>
+                    </div>
+                </div>
+                <div class="space-y-6">
+            `;
             
-            // Hitung statistik
-            let totalSulit = 0;
-            let totalSedang = 0;
-            let totalMudah = 0;
-            
-            analisisSoal.forEach(soal => {
-                let kategoriClass = '';
-                let badgeClass = '';
-                let kategoriText = '';
-                
-                if (soal.P < 0.30) {
-                    kategoriClass = 'sulit';
-                    badgeClass = 'badge-sulit';
-                    kategoriText = 'Sulit';
-                    totalSulit++;
-                } else if (soal.P <= 0.70) {
-                    kategoriClass = 'sedang';
-                    badgeClass = 'badge-sedang';
-                    kategoriText = 'Sedang';
-                    totalSedang++;
-                } else {
-                    kategoriClass = 'mudah';
-                    badgeClass = 'badge-mudah';
-                    kategoriText = 'Mudah';
-                    totalMudah++;
-                }
+            hasil.analisisSoal.forEach(soal => {
+                const kategoriClass = soal.kategori === 'Sulit' ? 'sulit' : 
+                                   soal.kategori === 'Sedang' ? 'sedang' : 'mudah';
+                const badgeClass = soal.kategori === 'Sulit' ? 'badge-sulit' : 
+                                soal.kategori === 'Sedang' ? 'badge-sedang' : 'badge-mudah';
                 
                 html += `
-                    <div class="soal-card ${kategoriClass} p-6 rounded-lg shadow-md" data-kategori="${kategoriText.toLowerCase()}">
-                        <div class="flex justify-between items-start mb-4">
+                    <div class="soal-card ${kategoriClass} p-4 rounded-lg">
+                        <div class="flex justify-between items-start mb-3">
                             <div>
-                                <h3 class="text-xl font-bold text-gray-800">Soal Nomor ${soal.no}</h3>
-                                <p class="text-sm text-gray-600">Kunci Jawaban: <span class="font-bold">${soal.kunci}</span></p>
-                            </div>
-                            <span class="badge ${badgeClass}">${kategoriText}</span>
-                        </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                            <div class="text-center">
-                                <div class="text-2xl font-bold text-blue-600">${soal.benar}</div>
-                                <div class="text-sm text-gray-600">Siswa Benar</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-2xl font-bold text-green-600">${soal.P.toFixed(2)}</div>
-                                <div class="text-sm text-gray-600">Tingkat Kesukaran (P)</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-2xl font-bold ${soal.P < 0.30 ? 'text-red-600' : soal.P <= 0.70 ? 'text-yellow-600' : 'text-green-600'}">
-                                    ${(soal.P * 100).toFixed(0)}%
+                                <h3 class="font-bold text-lg">Soal Nomor ${soal.no}</h3>
+                                <div class="flex items-center space-x-2 mt-1">
+                                    <span class="text-sm text-gray-600">Kunci: <strong>${soal.kunci}</strong></span>
+                                    <span class="text-sm text-gray-600">|</span>
+                                    <span class="text-sm text-gray-600">Tingkat Kesukaran: <strong>${soal.P.toFixed(2)}</strong></span>
+                                    <span class="badge ${badgeClass}">${soal.kategori}</span>
                                 </div>
-                                <div class="text-sm text-gray-600">Persentase Benar</div>
                             </div>
                         </div>
-                        
-                        <div class="bg-white rounded-lg p-4">
-                            <h4 class="font-semibold text-gray-800 mb-2">Interpretasi:</h4>
-                            <p class="text-sm text-gray-700">
-                                ${soal.P < 0.30 ? 
-                                    'Soal ini termasuk kategori SULIT. Hanya ' + (soal.P * 100).toFixed(0) + '% siswa yang dapat menjawab dengan benar. Perlu ditinjau kembali tingkat kesulitannya.' :
-                                soal.P <= 0.70 ? 
-                                    'Soal ini termasuk kategori SEDANG. Sebanyak ' + (soal.P * 100).toFixed(0) + '% siswa dapat menjawab dengan benar. Tingkat kesulitan sudah sesuai.' :
-                                    'Soal ini termasuk kategori MUDAH. Sebanyak ' + (soal.P * 100).toFixed(0) + '% siswa dapat menjawab dengan benar. Soal ini baik untuk mengukur pemahaman dasar.'}
-                            </p>
+                        <div class="bg-white p-3 rounded border border-gray-200">
+                            <p class="text-gray-800 whitespace-pre-wrap">${soal.soalText || `Soal nomor ${soal.no} (belum diisi)`}</p>
+                        </div>
+                        <div class="mt-2 text-sm text-gray-600">
+                            <strong>Analisis:</strong> Soal ini dijawab benar oleh ${soal.benar} dari ${hasil.totalSiswa} siswa (${(soal.P * 100).toFixed(1)}%).
                         </div>
                     </div>
                 `;
             });
             
-            container.innerHTML = html;
-            
-            // Update statistik
-            document.getElementById('totalSoal').textContent = analisisSoal.length;
-            document.getElementById('soalSulit').textContent = totalSulit;
-            document.getElementById('soalSedang').textContent = totalSedang;
-            document.getElementById('soalMudah').textContent = totalMudah;
-            
-            // Tambahkan event listener untuk filter
-            tambahkanFilterSoal();
+            html += `</div>`;
+            return html;
         }
-
-        // Fungsi untuk menambahkan filter soal
-        function tambahkanFilterSoal() {
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            
-            filterButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    // Hapus active class dari semua button
-                    filterButtons.forEach(btn => btn.classList.remove('active'));
-                    // Tambahkan active class ke button yang diklik
-                    this.classList.add('active');
-                    
-                    const kategori = this.getAttribute('data-kategori');
-                    const semuaSoal = document.querySelectorAll('.soal-card');
-                    
-                    semuaSoal.forEach(soal => {
-                        if (kategori === 'all') {
-                            soal.style.display = 'block';
-                        } else {
-                            if (soal.getAttribute('data-kategori') === kategori) {
-                                soal.style.display = 'block';
-                            } else {
-                                soal.style.display = 'none';
-                            }
-                        }
-                    });
-                });
-            });
-        }
-
-        // Fungsi utama Analisis
-        function prosesAnalisisData() {
-            const kkm = parseFloat(document.getElementById('kkm').value);
-            const jumlahSoal = parseInt(document.getElementById('jumlahSoal').value);
-            const kunciJawabanStr = document.getElementById('kunciJawaban').value.trim();
-            
-            // Update identitas ujian terlebih dahulu
-            updateIdentitasUjian();
-            
-            // Tentukan sumber data (tabel atau textarea)
-            let dataSiswaStr;
-            if (document.getElementById('tableInput').classList.contains('hidden')) {
-                dataSiswaStr = document.getElementById('dataSiswa').value.trim();
-            } else {
-                dataSiswaStr = collectDataFromTable();
-            }
-            
-            const infoBox = document.getElementById('info-box');
-            
-            // Sembunyikan info box
-            infoBox.classList.add('hidden');
-
-            // --- 1. Validasi Input ---
-            if (!kunciJawabanStr || !dataSiswaStr) {
-                showInfo('Error: Kunci Jawaban dan Data Jawaban Siswa tidak boleh kosong.');
-                return;
-            }
-
-            const kunci = kunciJawabanStr.split(',').map(k => k.trim().toUpperCase());
-            if (kunci.length !== jumlahSoal) {
-                showInfo(`Error: Jumlah Kunci Jawaban (${kunci.length}) tidak sesuai dengan Jumlah Soal (${jumlahSoal}).`);
-                return;
-            }
-
-            const lines = dataSiswaStr.split('\n').filter(line => line.trim() !== "");
-            if (lines.length === 0) {
-                showInfo('Error: Tidak ada data siswa untuk diproses.');
-                return;
-            }
-
-            // --- 2. Inisialisasi Variabel Analisis ---
-            let analisisSoal = [];
-            for (let i = 0; i < jumlahSoal; i++) {
-                analisisSoal.push({ no: i + 1, kunci: kunci[i], benar: 0 });
-            }
-
-            let analisisSiswa = [];
-            let matriksHeaders = ['<th class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Nama Siswa</th>'];
-            for (let i = 1; i <= jumlahSoal; i++) {
-                matriksHeaders.push(`<th class="px-2 py-3 text-xs font-medium text-gray-600 uppercase">J${i}</th>`);
-            }
-            
-            // Buat baris header untuk Kunci Jawaban
-            let kunciHeaderHtml = '<tr class="border-t border-gray-300"><th class="px-4 py-3 text-left text-xs font-medium text-blue-700 bg-blue-50 uppercase">KUNCI JAWABAN</th>';
-            kunci.forEach(k => {
-                kunciHeaderHtml += `<th class="px-2 py-3 text-xs font-bold text-blue-700 bg-blue-50">${k}</th>`;
-            });
-            kunciHeaderHtml += '</tr>';
-            
-            let matriksBody = '';
-            const totalSiswa = lines.length;
-            let dataValid = true;
-
-            // --- 3. Looping Utama (Proses Data Siswa) ---
-            lines.forEach((line, index) => {
-                const parts = line.split(',').map(p => p.trim());
-                // Minimal 2 (NIS, Nama) + jumlahSoal
-                if (parts.length < (2 + jumlahSoal)) {
-                    showInfo(`Error di baris ${index + 1}: Data tidak lengkap. Pastikan formatnya NIS,Nama,J1,J2,...`);
-                    dataValid = false;
-                    return;
-                }
-
-                const nis = parts[0];
-                const nama = parts[1];
-                const jawabanSiswa = parts.slice(2, 2 + jumlahSoal);
-
-                let jumlahBenar = 0;
-                let matriksRowHtml = `<td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-left">${nama}</td>`;
-
-                // Loop per soal
-                for (let i = 0; i < jumlahSoal; i++) {
-                    let jawaban = jawabanSiswa[i] ? jawabanSiswa[i].toUpperCase() : "-";
-                    if (jawaban.trim() === "") jawaban = "-";
-
-                    if (jawaban === kunci[i]) {
-                        jumlahBenar++;
-                        analisisSoal[i].benar++;
-                        matriksRowHtml += `<td class="px-2 py-3 text-sm font-semibold text-green-700 bg-green-50">${jawaban}</td>`;
-                    } else {
-                        matriksRowHtml += `<td class="px-2 py-3 text-sm font-semibold text-red-700 bg-red-50">${jawaban}</td>`;
-                    }
-                }
-
-                // Hitung nilai siswa
-                const nilaiAkhir = (jumlahBenar / jumlahSoal) * 10;
-                const status = (nilaiAkhir >= kkm) ? 'Tuntas' : 'Remedial';
-
-                analisisSiswa.push({ nis, nama, jumlahBenar, nilaiAkhir, status });
-                matriksBody += `<tr class="divide-x divide-gray-200">${matriksRowHtml}</tr>`;
-            });
-            
-            if (!dataValid) return;
-
-            // --- 4. Hitung P (Tingkat Kesukaran) untuk setiap soal ---
-            analisisSoal.forEach(soal => {
-                soal.P = soal.benar / totalSiswa;
-            });
-
-            // Simpan data analisis soal untuk digunakan di tab daftar soal
-            analisisSoalData = analisisSoal;
-
-            // --- 5. Populate Tabel Hasil ---
-            
-            // TAB 1: Analisis Butir Soal
-            const tableBodySoal = document.getElementById('tableBodySoal');
-            tableBodySoal.innerHTML = '';
-            analisisSoal.forEach(soal => {
-                let kategori = '';
-                let kategoriClass = '';
-
-                if (soal.P < 0.30) {
-                    kategori = 'Sulit';
-                    kategoriClass = 'text-red-700 font-bold';
-                } else if (soal.P <= 0.70) {
-                    kategori = 'Sedang';
-                    kategoriClass = 'text-yellow-700 font-bold';
-                } else {
-                    kategori = 'Mudah';
-                    kategoriClass = 'text-green-700 font-bold';
-                }
-
-                tableBodySoal.innerHTML += `
-                    <tr>
-                        <td class="px-6 py-4 text-sm text-gray-900">${soal.no}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900 font-bold">${soal.kunci}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900">${soal.benar}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900">${totalSiswa}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900">${soal.P.toFixed(2)}</td>
-                        <td class="px-6 py-4 text-sm ${kategoriClass}">${kategori}</td>
-                    </tr>
-                `;
-            });
-
-            // TAB 2: Analisis Siswa (Remedial)
-            const tableBodySiswa = document.getElementById('tableBodySiswa');
-            tableBodySiswa.innerHTML = '';
-            analisisSiswa.sort((a, b) => (a.status === 'Remedial' ? -1 : 1));
-            
-            analisisSiswa.forEach(siswa => {
-                const statusClass = (siswa.status === 'Remedial') ? 'text-red-700 font-bold bg-red-50' : 'text-green-700';
-                tableBodySiswa.innerHTML += `
-                    <tr class="${(siswa.status === 'Remedial') ? 'bg-red-50' : ''}">
-                        <td class="px-6 py-4 text-sm text-gray-900">${siswa.nis}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900">${siswa.nama}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900">${siswa.jumlahBenar} / ${jumlahSoal}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900 font-bold">${siswa.nilaiAkhir.toFixed(1)}</td>
-                        <td class="px-6 py-4 text-sm ${statusClass}">${siswa.status}</td>
-                    </tr>
-                `;
-            });
-
-            // TAB 3: Matriks Jawaban
-            document.getElementById('tableHeadMatriks').innerHTML = `<tr>${matriksHeaders.join('')}</tr>${kunciHeaderHtml}`;
-            document.getElementById('tableBodyMatriks').innerHTML = matriksBody;
-
-            // TAB 4: Daftar Soal & Analisis
-            tampilkanDaftarSoal(analisisSoalData);
-            
-            showInfo(`Analisis berhasil diproses untuk ${totalSiswa} siswa.`, 'success');
-        }
-
     </script>
 </body>
 </html>
