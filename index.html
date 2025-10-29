@@ -90,6 +90,10 @@
                 margin-top: 3rem;
                 page-break-before: always;
             }
+            /* Gabungkan bagian validasi dengan kertas sebelumnya */
+            .print-approval {
+                page-break-before: auto !important;
+            }
         }
 
         /* Sembunyikan header print secara default */
@@ -223,6 +227,11 @@
         .option-input {
             margin-bottom: 8px;
         }
+
+        /* Perbesar font untuk dropdown guru */
+        #guruMapel {
+            font-size: 14px !important;
+        }
     </style>
     <!-- Memuat font Inter dari Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -304,13 +313,17 @@
                         <label for="fase" class="block text-sm font-medium text-white mb-2">Fase:</label>
                         <select id="fase" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm input-kecil">
                             <option value="">Pilih Fase</option>
+                            <option value="Fase A">Fase A (Kelas 1-2)</option>
+                            <option value="Fase B">Fase B (Kelas 3-4)</option>
+                            <option value="Fase C">Fase C (Kelas 5-6)</option>
+                            <option value="Fase D">Fase D (Kelas 7-9)</option>
                             <option value="Fase E">Fase E (Kelas 10)</option>
                             <option value="Fase F">Fase F (Kelas 11-12)</option>
                         </select>
                     </div>
                     <div>
                         <label for="guruMapel" class="block text-sm font-medium text-white mb-2">Guru Mata Pelajaran:</label>
-                        <select id="guruMapel" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm input-kecil">
+                        <select id="guruMapel" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm">
                             <option value="">Pilih Guru</option>
                         </select>
                         <input type="hidden" id="nipGuru">
@@ -678,11 +691,13 @@
                 <!-- Approval Section -->
                 <div class="print-approval">
                     <div class="text-center">
-                        <p class="font-semibold">Guru Mata Pelajaran</p>
+                        <p class="font-semibold">Kepala Sekolah</p>
                         <div class="ttd-area">
+                            <img src="https://ik.imagekit.io/szyueti8m/ttd%20KS%20-%20Diedit%20-%20Diedit%20-%20Diedit.png?updatedAt=1761382931279" 
+                                 alt="TTD Kepala Sekolah" class="h-16 mx-auto mb-2">
                             <div class="ttd-line"></div>
-                            <p id="approval-guru" class="mt-2 font-semibold">-</p>
-                            <p class="text-sm">NIP. <span id="approval-nip">-</span></p>
+                            <p class="mt-2 font-semibold">Maryono, S.Pd., M.Si</p>
+                            <p class="text-sm">NIP. 196607012000121002</p>
                         </div>
                     </div>
                     
@@ -698,13 +713,11 @@
                     </div>
                     
                     <div class="text-center">
-                        <p class="font-semibold">Kepala Sekolah</p>
+                        <p class="font-semibold">Guru Mata Pelajaran</p>
                         <div class="ttd-area">
-                            <img src="https://ik.imagekit.io/szyueti8m/ttd%20KS%20-%20Diedit%20-%20Diedit%20-%20Diedit.png?updatedAt=1761382931279" 
-                                 alt="TTD Kepala Sekolah" class="h-16 mx-auto mb-2">
                             <div class="ttd-line"></div>
-                            <p class="mt-2 font-semibold">Maryono, S.Pd., M.Si</p>
-                            <p class="text-sm">NIP. 196607012000121002</p>
+                            <p id="approval-guru" class="mt-2 font-semibold">-</p>
+                            <p class="text-sm">NIP. <span id="approval-nip">-</span></p>
                         </div>
                     </div>
                 </div>
@@ -1568,5 +1581,3 @@
     </script>
 </body>
 </html>
-
-
